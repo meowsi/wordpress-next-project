@@ -1,6 +1,6 @@
-# Boilerplate-Next-Wordpress
+# Projeto em Next / Wordpress / SASS
 
-Boilerplate para blogs em Next.js com Wordpress
+Pode ser usado como boilerplate para blogs em Next.js com Wordpress.
 
 <br />
 
