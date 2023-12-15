@@ -1,0 +1,51 @@
+version: "3.1"
+
+services:
+  apache:
+    build: .
+    container_name: backend_next_apache
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${ROOT_USER}
+      WORDPRESS_DB_PASSWORD: ${ROOT_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+    volumes:
+      - ./wordpress:/var/www/html
+      - ./configs/apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./configs/php/php.ini:/usr/local/etc/php/php.ini
+      - ./configs/ssl:/ssl
+    env_file: .env
+    depends_on:
+      - db
+    entrypoint:
+      - docker-entrypoint.sh
+
+  db:
+    image: mysql:5.7
+    container_name: backend_next_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${ROOT_USER}
+      MYSQL_PASSWORD: ${ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+    volumes:
+      - db:/var/lib/mysql
+      - ./data/mysql:/data/mysql
+    env_file: .env
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: backend_next_phpmyadmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: db
+    env_file: .env
+
+volumes:
+  db:

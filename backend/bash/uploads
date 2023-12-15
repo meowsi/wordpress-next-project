@@ -1,0 +1,45 @@
+#! /bin/bash
+
+# export .env vars
+export $(grep "REPO_NAME_LOWER=" .env)
+export $(grep "APACHE_CONTAINER_NAME=" .env)
+
+# local vars
+container=$APACHE_CONTAINER_NAME
+today="`date +"%Y-%m-%d"`"
+dump_path=data/uploads
+
+# check arg1
+if [[ $1 == "save" ]]; then
+
+    # check if output file exists
+    if [ -e $dump_path/$today.zip  ]; then
+        echo "Dump $dump_path/$today.zip already exists."
+        exit
+    fi
+
+    # zip uploads
+    docker exec $container bash -c "cd /var/www/html/wp-content && zip -r /uploads/$today.zip uploads"
+
+    echo "Uploads folder dumped to $dump_path/$today.zip"
+
+elif [[ $1 == "load" ]]; then
+    # get last dump file
+    last_dump=$(ls $dump_path | sort -V | tail -n 1)
+
+    # check if there is any dump
+    if [[ $last_dump == "" ]]; then
+        echo "No dump to load."
+        exit
+    fi
+
+    # unzip uploads
+    docker exec $container bash -c "unzip /uploads/$today.zip -d /var/www/html/wp-content"
+
+
+    echo "$last_dump Loaded."
+else
+    echo "Usage: uploads [save|load]"
+    echo "Example: uploads save"
+    echo "Example: uploads load"
+fi
