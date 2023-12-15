@@ -22,6 +22,8 @@ Boilerplate para blogs em Next.js com Wordpress
 - define('WP_DEBUG', false);
 - define('WP_DEBUG_DISPLAY', false);
 
+<br />
+
 ## Backend
 
 Projeto em docker <br />
